@@ -223,6 +223,15 @@ $repository = $client->api('repo')->forks()->create('ornicar', 'php-github-api')
 
 Creates a fork of the 'php-github-api' owned by 'ornicar' and returns the newly created repository.
 
+### Merge upstream repository
+
+> Requires [authentication](security.md).
+
+```php
+$repository = $client->api('repo')->mergeUpstream('ornicar', 'php-github-api', 'branchName');
+```
+Merge upstream a branch of a forked repository to keep it up-to-date with the upstream repository.
+
 ### Get the tags of a repository
 
 ```php
@@ -310,8 +319,8 @@ $activity = $client->api('repo')->activity('ornicar', 'php-github-api');
 Returns an array of commit activity group by week.
 
 ### `Moved` repositories
-Github repositories can be moved to another org/user, but it remains the `id`.
-In case if you can't no more find repo, you can retrieve it by `id`:
+GitHub repositories can be moved to another org/user, but it remains the `id`.
+In case you can't find the repo anymore, you can retrieve it by `id`:
 
 ```php
 use Github\HttpClient\Message\ResponseMediator;
@@ -365,7 +374,7 @@ $repo = $client->api('repo')->transfer('KnpLabs', 'php-github-api', 'github', [1
 
 ### Create a repository dispatch event
 
-Example when you want to configure custom github action workflows.
+Example when you want to configure custom GitHub action workflows.
 
 ```php
 $client->api('repo')->dispatch('KnpLabs', 'php-github-api', 'acme-event', ['foo'=>'bar']);
@@ -380,4 +389,28 @@ $client->api('repo')->createFromTemplate('template-owner', 'template-repo', [
     'name' => 'name-of-new-repo',
     'owner' => 'name-of-new-repo-owner', // can be user or org
 ]);
+```
+
+### Check if vulnerability alerts (dependabot alerts) are enabled for a repository
+
+https://developer.github.com/v3/repos/#check-if-vulnerability-alerts-are-enabled-for-a-repository
+
+```php
+$client->api('repo')->isVulnerabilityAlertsEnabled('KnpLabs', 'php-github-api');
+```
+
+### Enable vulnerability alerts (dependabot alerts)
+
+https://developer.github.com/v3/repos/#enable-vulnerability-alerts
+
+```php
+$client->api('repo')->enableVulnerabilityAlerts('KnpLabs', 'php-github-api');
+```
+
+### Disable vulnerability alerts (dependabot alerts)
+
+https://developer.github.com/v3/repos/#disable-vulnerability-alerts
+
+```php
+$client->api('repo')->disableVulnerabilityAlerts('KnpLabs', 'php-github-api');
 ```
