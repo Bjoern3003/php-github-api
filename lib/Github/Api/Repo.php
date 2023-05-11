@@ -5,6 +5,7 @@ namespace Github\Api;
 use Github\Api\Repository\Actions\Artifacts;
 use Github\Api\Repository\Actions\Secrets;
 use Github\Api\Repository\Actions\SelfHostedRunners;
+use Github\Api\Repository\Actions\Variables;
 use Github\Api\Repository\Actions\WorkflowJobs;
 use Github\Api\Repository\Actions\WorkflowRuns;
 use Github\Api\Repository\Actions\Workflows;
@@ -406,6 +407,14 @@ class Repo extends AbstractApi
     }
 
     /**
+     * @link https://docs.github.com/en/rest/reference/actions#secrets
+     */
+    public function variables(): Variables
+    {
+        return new Variables($this->getClient());
+    }
+
+    /**
      * Manage the content of a repository.
      *
      * @link http://developer.github.com/v3/repos/contents/
@@ -533,6 +542,21 @@ class Repo extends AbstractApi
         }
 
         return $this->get($url, $parameters);
+    }
+
+    /**
+     * Sync a fork branch with the upstream repository.
+     *
+     * @link https://docs.github.com/en/rest/branches/branches#sync-a-fork-branch-with-the-upstream-repository
+     *
+     * @return array|string
+     */
+    public function mergeUpstream(string $username, string $repository, string $branchName)
+    {
+        return $this->post(
+            '/repos/'.rawurlencode($username).'/'.rawurlencode($repository).'/merge-upstream',
+            ['branch' => $branchName]
+        );
     }
 
     /**
@@ -827,5 +851,50 @@ class Repo extends AbstractApi
         $this->acceptHeaderValue = 'application/vnd.github.baptiste-preview+json';
 
         return $this->post('/repos/'.rawurldecode($templateOwner).'/'.rawurldecode($templateRepo).'/generate', $parameters);
+    }
+
+    /**
+     * Check if vulnerability alerts are enabled for a repository.
+     *
+     * @link https://developer.github.com/v3/repos/#check-if-vulnerability-alerts-are-enabled-for-a-repository
+     *
+     * @param string $username   the username
+     * @param string $repository the repository
+     *
+     * @return array|string
+     */
+    public function isVulnerabilityAlertsEnabled(string $username, string $repository)
+    {
+        return $this->get('/repos/'.rawurlencode($username).'/'.rawurlencode($repository).'/vulnerability-alerts');
+    }
+
+    /**
+     * Enable vulnerability alerts for a repository.
+     *
+     * @link https://developer.github.com/v3/repos/#enable-vulnerability-alerts
+     *
+     * @param string $username   the username
+     * @param string $repository the repository
+     *
+     * @return array|string
+     */
+    public function enableVulnerabilityAlerts(string $username, string $repository)
+    {
+        return $this->put('/repos/'.rawurlencode($username).'/'.rawurlencode($repository).'/vulnerability-alerts');
+    }
+
+    /**
+     * Disable vulnerability alerts for a repository.
+     *
+     * @link https://developer.github.com/v3/repos/#disable-vulnerability-alerts
+     *
+     * @param string $username   the username
+     * @param string $repository the repository
+     *
+     * @return array|string
+     */
+    public function disableVulnerabilityAlerts(string $username, string $repository)
+    {
+        return $this->delete('/repos/'.rawurlencode($username).'/'.rawurlencode($repository).'/vulnerability-alerts');
     }
 }

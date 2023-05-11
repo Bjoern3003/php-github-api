@@ -243,6 +243,26 @@ class RepoTest extends TestCase
     /**
      * @test
      */
+    public function shouldMergeUpstreamRepository()
+    {
+        $expectedArray = [
+            'message' => 'Successfully fetched and fast-forwarded from upstream upstreamRepo:main',
+            'merge_type' => 'fast-forward',
+            'merge_branch' => 'upstreamRepo:main',
+        ];
+
+        $api = $this->getApiMock();
+        $api->expects($this->once())
+            ->method('post')
+            ->with('/repos/KnpLabs/php-github-api/merge-upstream', ['branch' => 'main'])
+            ->will($this->returnValue($expectedArray));
+
+        $this->assertEquals($expectedArray, $api->mergeUpstream('KnpLabs', 'php-github-api', 'main'));
+    }
+
+    /**
+     * @test
+     */
     public function shouldGetRepositoryLanguages()
     {
         $expectedArray = ['lang1', 'lang2'];
@@ -553,6 +573,16 @@ class RepoTest extends TestCase
     /**
      * @test
      */
+    public function shouldGetVariablesApiObject()
+    {
+        $api = $this->getApiMock();
+
+        $this->assertInstanceOf(\Github\Api\Repository\Actions\Variables::class, $api->variables());
+    }
+
+    /**
+     * @test
+     */
     public function shouldGetCommitActivity()
     {
         $expectedArray = [['days' => [0, 3, 26, 20, 39, 1, 0], 'total' => 89, 'week' => 1336280400]];
@@ -701,5 +731,59 @@ class RepoTest extends TestCase
     protected function getApiClass()
     {
         return \Github\Api\Repo::class;
+    }
+
+    /**
+     * @test
+     */
+    public function shouldCheckVulnerabilityAlertsEnabled()
+    {
+        $expectedResponse = '';
+
+        $api = $this->getApiMock();
+
+        $api
+            ->expects($this->once())
+            ->method('get')
+            ->with('/repos/KnpLabs/php-github-api/vulnerability-alerts')
+            ->will($this->returnValue($expectedResponse));
+
+        $this->assertEquals($expectedResponse, $api->isVulnerabilityAlertsEnabled('KnpLabs', 'php-github-api'));
+    }
+
+    /**
+     * @test
+     */
+    public function shouldEnableVulnerabilityAlerts()
+    {
+        $expectedResponse = '';
+
+        $api = $this->getApiMock();
+
+        $api
+            ->expects($this->once())
+            ->method('put')
+            ->with('/repos/KnpLabs/php-github-api/vulnerability-alerts')
+            ->will($this->returnValue($expectedResponse));
+
+        $this->assertEquals($expectedResponse, $api->enableVulnerabilityAlerts('KnpLabs', 'php-github-api'));
+    }
+
+    /**
+     * @test
+     */
+    public function shouldDisableVulnerabilityAlerts()
+    {
+        $expectedResponse = '';
+
+        $api = $this->getApiMock();
+
+        $api
+            ->expects($this->once())
+            ->method('delete')
+            ->with('/repos/KnpLabs/php-github-api/vulnerability-alerts')
+            ->will($this->returnValue($expectedResponse));
+
+        $this->assertEquals($expectedResponse, $api->disableVulnerabilityAlerts('KnpLabs', 'php-github-api'));
     }
 }
